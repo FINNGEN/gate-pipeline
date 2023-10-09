@@ -27,6 +27,5 @@
   "gate.test_combine.combine.loglog_pval": 10,
   "gate.test_combine.combine.logP": false,
   "gate.test_combine.test.minmac": 20,
-  "gate.test_combine.combine.docker": "us.gcr.io/phewas-development/plotv2:0.3",
-  "gate.test_combine.annovar.docker": "us.gcr.io/phewas-development/meta:4bd49"
+  "gate.test_combine.combine.docker": "us.gcr.io/phewas-development/plotv2:0.3"
 }

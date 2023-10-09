@@ -156,57 +156,6 @@ task combine {
     }
 }
 
-task annovar {
-
-    String docker
-    File file_tophit
-    File file_meta
-    String base = basename(file_tophit)
-    String base_meta = basename(file_meta)
-
-    command <<<
-
-        mv ${file_tophit} ${base}
-        mv ${file_meta} ${base_meta}
-
-
-        echo "`date` annovar start"
-        perl /annovar/table_annovar.pl ${base} /annovar/humandb -buildver hg38 -out ${base}_annovar -remove -protocol refGene -operation gx -nastring NA -polish
-
-        echo "`date` subset start"
-
-
-        gunzip -c ${base_meta} | head -n 1 > ${base}_hg38.txt
-        zgrep -Fwf <(awk '{print $1"\t"$2"\t"$4"\t"$5}' ${base})  ${base_meta} >> ${base}_hg38.txt
-
-        sed -i -e "1s/chrom/CHR/" -e "1s/pos/POS/" -e "1s/ref/REF/" -e "1s/alt/ALT/" ${base}_hg38.txt
-
-        echo "`date` subset end"
-
-        Rscript /annovar/mergeAnno.R --input_anno=${base}_annovar.hg38_multianno.txt --input_meta=${base}_hg38.txt --outfile=${base}_hg38_annovar.txt
-
-    >>>
-
-
-    output {
-        File out2 = base + "_annovar.hg38_multianno.txt"
-        File out3 = base + "_hg38.txt"
-        File out = base + "_hg38_annovar.txt"
-
-    }
-
-    runtime {
-        docker: "${docker}"
-        cpu: 1
-        memory: "20 GB"
-        disks: "local-disk 200 SSD"
-        zones: "us-east1-b us-east1-c us-east1-d"
-        preemptible: 0
-        noAddress: true
-    }
-}
-
-
 workflow test_combine {
 
     String docker
@@ -225,10 +174,11 @@ workflow test_combine {
         input: pheno=pheno, results2D=test.out
     }
 
-    call annovar {
-        input: file_tophit=combine.out_tophits, file_meta=combine.out
+    output {
+        File sumstat = combine.out
+        File sumstat_tbi = combine.out_ind
+        File regions = combine.out_regions
+        File tophits = combine.out_tophits
+        Array[File] pngs = combine.pngs
     }
-    #output {
-    #    File out = combine.out
-    #}
 }
