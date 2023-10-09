@@ -5,6 +5,7 @@
   "gate.covmatrix": "gs://pan-ukbb-us-data/ukb_eur_pruned_within_pop_pc_covs.tsv.gz",
   "gate.loco": "FALSE",
   "gate.traitType": "survival",
+  "gate.bgenlistfile": "gs://pan-ukbb-us-data/pan_ukbb_bgen_no_empty_bgens.txt",
 
   "gate.null.traceCVcutoff": 0.0025,
   "gate.null.sampleID": "IID",
@@ -17,15 +18,15 @@
   "gate.null.covariates": "sex,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10,T2D_AGE,T1D",
   "gate.null.minCovariateCount": 10,
 
-  "gate.test_combine.combine.prefix": "panukbb_gate",
-  "gate.test_combine.bgenlistfile": "gs://pan-ukbb-us-data/pan_ukbb_bgen_no_empty_bgens.txt",
-  "gate.test_combine.test.samplefile": "gs://pan-ukbb-us-data/pan_ukbb_bgen_samples.txt",
-  "gate.test_combine.combine.p_valcol": "pval",
-  "gate.test_combine.combine.chrcol": "#chrom",
-  "gate.test_combine.combine.bp_col": "pos",
-  "gate.test_combine.combine.af_col": "af_alt",
-  "gate.test_combine.combine.loglog_pval": 10,
-  "gate.test_combine.combine.logP": false,
-  "gate.test_combine.test.minmac": 20,
-  "gate.test_combine.combine.docker": "us.gcr.io/phewas-development/plotv2:0.3"
+  "gate.test.samplefile": "gs://pan-ukbb-us-data/pan_ukbb_bgen_samples.txt",
+  "gate.test.minmac": 20,
+  
+  "gate.combine.prefix": "panukbb_gate",
+  "gate.combine.p_valcol": "pval",
+  "gate.combine.chrcol": "#chrom",
+  "gate.combine.bp_col": "pos",
+  "gate.combine.af_col": "af_alt",
+  "gate.combine.loglog_pval": 10,
+  "gate.combine.logP": false,
+  "gate.combine.docker": "us.gcr.io/phewas-development/plotv2:0.3"
 }
