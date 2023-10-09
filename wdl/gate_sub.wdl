@@ -53,7 +53,7 @@ task test {
         cpu: length(bgenfiles)
         memory: (4 * length(bgenfiles)) + " GB"
         disks: "local-disk " + (length(bgenfiles) * ceil(size(bgenfiles[0], "G")) + 5) + " HDD"
-        zones: "europe-west1-b"
+        zones: "us-east1-b us-east1-c us-east1-d"
         preemptible: 3
         noAddress: true
     }
@@ -85,7 +85,9 @@ task combine {
         | bgzip > ${prefix}${pheno}.saige.gz
 
         echo "`date` converting results to ${prefix}${pheno}.gz"
+
         python3 <<EOF | sort -k 1,1g -k 2,2g | bgzip > ${prefix}${pheno}.gz
+
         import math, gzip
         from collections import OrderedDict
         from functools import reduce
@@ -102,8 +104,7 @@ task combine {
             ("ref", ("Allele1", [])),
             ("alt", ("Allele2", [])),
             ("pval", ("p.value", [(float, ()), (math.exp, ()), (str.format, ("{:.2e}"))])) if ${logPStr} else ("pval", ("p.value", [(float, ()), (str.format, ("{:.2e}"))])),
-            ("mlogp", ("p.value", [(float, ()), (abs, ()), (conv_base, ()), (str.format, ("{:.4f}"))])) if ${logPStr} else ("mlogp", ("p.value", [(float, ()), (math.log10, ()), (abs, ()), (str.format, 
-("{:.4f}"))])),
+            ("mlogp", ("p.value", [(float, ()), (abs, ()), (conv_base, ()), (str.format, ("{:.4f}"))])) if ${logPStr} else ("mlogp", ("p.value", [(float, ()), (math.log10, ()), (abs, ()), (str.format, ("{:.4f}"))])),
             ("beta", ("BETA", [(float, ()), (str.format, ("{:.5f}"))])),
             ("sebeta", ("SE", [(float, ()), (str.format, ("{:.5f}"))])),
             ("af_alt", ("AF_Allele2", [(float, ()), (str.format, ("{:.2e}"))])),
@@ -120,17 +121,19 @@ task combine {
             for line in f:
                 s = line.strip().split(' ')
                 print('\t'.join(str(red(s[header[v[0]]], v[1])) for v in mapping.values()))
+        
         EOF
+
         echo "`date` Manhattan plot start"
-        /plot_scripts/ManhattanPlot.r --input=${prefix}${pheno}.gz  --PVAL="${p_valcol}" --knownRegionFlank=1000000 --prefix="${prefix}${pheno}"  --ismanhattanplot=TRUE --isannovar=FALSE --isqqplot=FALSE 
---CHR="${chrcol}" --POS="${bp_col}" --ALLELE1=ref --ALLELE2=alt
+        /plot_scripts/ManhattanPlot.r --input=${prefix}${pheno}.gz  --PVAL="${p_valcol}" --knownRegionFlank=1000000 --prefix="${prefix}${pheno}"  --ismanhattanplot=TRUE --isannovar=FALSE --isqqplot=FALSE --CHR="${chrcol}" --POS="${bp_col}" --ALLELE1=ref --ALLELE2=alt
 
         echo "`date` QQ plot start"
-         /plot_scripts/QQplot.r --input=${prefix}${pheno}.gz  --prefix="${prefix}${pheno}" --af="${af_col}" --pvalue="${p_valcol}"
+        /plot_scripts/QQplot.r --input=${prefix}${pheno}.gz  --prefix="${prefix}${pheno}" --af="${af_col}" --pvalue="${p_valcol}"
 
         echo "`date` tabixing"
         tabix -S 1 -b 2 -e 2 -s 1 ${prefix}${pheno}.gz
         echo "`date` done"
+        
     >>>
 
     output {
@@ -147,7 +150,7 @@ task combine {
         cpu: 1
         memory: "20 GB"
         disks: "local-disk 200 HDD"
-        zones: "europe-west1-b"
+        zones: "us-east1-b us-east1-c us-east1-d"
         preemptible: 2
         noAddress: true
     }
@@ -197,7 +200,7 @@ task annovar {
         cpu: 1
         memory: "20 GB"
         disks: "local-disk 200 SSD"
-        zones: "europe-west1-b"
+        zones: "us-east1-b us-east1-c us-east1-d"
         preemptible: 0
         noAddress: true
     }
