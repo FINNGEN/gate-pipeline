@@ -86,9 +86,14 @@ task null {
 
     command <<<
 
+        set -euxo pipefail
+
+        # Remove NA samples from cov_pheno
+        awk 'BEGIN {FS=OFS="\t"; p="~{pheno}"} NR==1 { for(i=1;i<=NF;i++) { h[$i]=i } print } NR>1 && $h[p]!="NA" && $h[p"_survTime"]!="NA" { print }' ~{cov_pheno} > cov_phenomatrix.tsv
+
         step1_fitNULLGLMM.R \
             --plinkFile=~{sub(bedfile, "\\.bed$", "")} \
-            --phenoFile=~{cov_pheno} \
+            --phenoFile=cov_phenomatrix.tsv \
             --phenoCol=~{pheno} \
             --eventTimeCol=~{pheno}_survTime \
             --eventTimeBinSize=~{eventTimeBinSize} \
