@@ -102,13 +102,12 @@ task combine {
             ("ref", ("Allele1", [])),
             ("alt", ("Allele2", [])),
             ("pval", ("p.value", [(float, ()), (math.exp, ()), (str.format, ("{:.2e}"))])) if ${logPStr} else ("pval", ("p.value", [(float, ()), (str.format, ("{:.2e}"))])),
-            ("mlogp", ("p.value", [(float, ()), (abs, ()), (conv_base, ()), (str.format, ("{:.4f}"))])) if ${logPStr} else ("mlogp", ("p.value", [(float, ()), (math.log10, ()), (abs, ()), (str.format, 
-("{:.4f}"))])),
+            ("mlogp", ("p.value", [(float, ()), (abs, ()), (conv_base, ()), (str.format, ("{:.4f}"))])) if ${logPStr} else ("mlogp", ("p.value", [(float, ()), (math.log10, ()), (abs, ()), (str.format, ("{:.4f}"))])),
             ("beta", ("BETA", [(float, ()), (str.format, ("{:.5f}"))])),
             ("sebeta", ("SE", [(float, ()), (str.format, ("{:.5f}"))])),
             ("af_alt", ("AF_Allele2", [(float, ()), (str.format, ("{:.2e}"))])),
             ("af_alt_cases", ("AF.Events", [(float, ()), (str.format, ("{:.2e}"))])),
-            ("af_alt_controls", ("AF.Censored", [(float, ()), (str.format, ("{:.2e}"))])),
+            ("af_alt_controls", ("AF.Censored", [(float, ()), (str.format, ("{:.2e}"))]))
         ])
 
         with gzip.open("${prefix}${pheno}.saige.gz", 'rt') as f:
@@ -120,13 +119,14 @@ task combine {
             for line in f:
                 s = line.strip().split(' ')
                 print('\t'.join(str(red(s[header[v[0]]], v[1])) for v in mapping.values()))
+
         EOF
+
         echo "`date` Manhattan plot start"
-        /plot_scripts/ManhattanPlot.r --input=${prefix}${pheno}.gz  --PVAL="${p_valcol}" --knownRegionFlank=1000000 --prefix="${prefix}${pheno}"  --ismanhattanplot=TRUE --isannovar=FALSE --isqqplot=FALSE 
---CHR="${chrcol}" --POS="${bp_col}" --ALLELE1=ref --ALLELE2=alt
+        /plot_scripts/ManhattanPlot.r --input=${prefix}${pheno}.gz  --PVAL="${p_valcol}" --knownRegionFlank=1000000 --prefix="${prefix}${pheno}"  --ismanhattanplot=TRUE --isannovar=FALSE --isqqplot=FALSE --CHR="${chrcol}" --POS="${bp_col}" --ALLELE1=ref --ALLELE2=alt
 
         echo "`date` QQ plot start"
-         /plot_scripts/QQplot.r --input=${prefix}${pheno}.gz  --prefix="${prefix}${pheno}" --af="${af_col}" --pvalue="${p_valcol}"
+        /plot_scripts/QQplot.r --input=${prefix}${pheno}.gz  --prefix="${prefix}${pheno}" --af="${af_col}" --pvalue="${p_valcol}"
 
         echo "`date` tabixing"
         tabix -S 1 -b 2 -e 2 -s 1 ${prefix}${pheno}.gz
