@@ -339,7 +339,7 @@ workflow gate {
     output {
             Array[File] nullmodels = null.modelfile
             Array[File] sumstats = combine.out
-            Array[File] sumstats_tbi = combine.out
+            Array[File] sumstats_tbi = combine.out_ind
             Array[File] regions = combine.out_regions
             Array[File] tophits = combine.out_tophits
             Array[Array[File]] pngs = combine.pngs
