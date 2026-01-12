@@ -5,7 +5,7 @@
   "gate.covmatrix": "gs://pan-ukbb-us-data/ukb_eur_pruned_within_pop_pc_covs.tsv.gz",
   "gate.loco": "FALSE",
   "gate.traitType": "survival",
-  "gate.bgenlistfile": "gs://pan-ukbb-us-data/pan_ukbb_bgen_no_empty_bgens.txt",
+  "gate.bgenlistfile": "gs://pan-ukbb-us-data/ukb_imp_v3_eur_bgens.txt",
 
   "gate.null.traceCVcutoff": 0.0025,
   "gate.null.sampleID": "IID",
